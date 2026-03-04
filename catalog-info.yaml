@@ -5,7 +5,7 @@ metadata:
   description: Simple Java user service
   annotations:
     github.com/project-slug: my-org/user-service
-    backstage.io/techdocs-ref: dir:.
+    backstage.io/techdocs-ref: dir:docs
 
 spec:
   type: service
