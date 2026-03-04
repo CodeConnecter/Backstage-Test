@@ -5,7 +5,7 @@ metadata:
   description: Assessment service
   annotations:
     github.com/project-slug: my-org/assessment-service
-    backstage.io/techdocs-ref: dir:docs
+    backstage.io/techdocs-ref: dir:.
 
 spec:
   type: service
