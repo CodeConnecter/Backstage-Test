@@ -3,6 +3,15 @@ kind: Component
 metadata:
   name: user-service
   description: Simple Java user service
+  links:
+    - title: Website
+      url: http://backstage.io
+    - title: Documentation
+      url: https://backstage.io/docs
+    - title: Storybook
+      url: https://backstage.io/storybook
+    - title: Discord Chat
+      url: https://discord.com/invite/EBHEGzX
   annotations:
     github.com/project-slug: my-org/user-service
     backstage.io/techdocs-ref: dir:.
