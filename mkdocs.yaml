@@ -1,0 +1,9 @@
+site_name: User Service Docs
+
+nav:
+  - Home: index.md
+
+docs_dir: docs
+
+plugins:
+  - techdocs-core
