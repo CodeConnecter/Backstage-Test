@@ -12,3 +12,16 @@ spec:
   owner: team-backend
   providesApis:
     - user-service-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: user-service-api
+  description: API for user service
+
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-backend
+  definition:
+    $text: ./api/openapi.yaml
