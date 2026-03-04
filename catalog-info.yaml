@@ -1,16 +1,16 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: user-service
-  description: Simple Java user service
+  name: assessment-service
+  description: Assessment service
   annotations:
-    github.com/project-slug: my-org/user-service
+    github.com/project-slug: my-org/assessment-service
     backstage.io/techdocs-ref: dir:docs
 
 spec:
   type: service
   lifecycle: production
-  owner: team-backend
+  owner: Team-Transformation
   providesApis:
     - user-service-api
 
@@ -18,12 +18,12 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: user-service-api
-  description: API for user service
+  name: assessment-service-api
+  description: API for assessment service
 
 spec:
   type: openapi
   lifecycle: production
-  owner: team-backend
+  owner: Team-Transformation
   definition:
     $text: ./api/openapi.yaml
