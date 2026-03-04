@@ -11,6 +11,10 @@ spec:
   type: service
   lifecycle: production
   owner: team-backend
+  dependsOn:
+    - resource:default/artists-db
+  dependencyOf:
+    - component:default/artist-web-lookup
   providesApis:
     - user-service-api
 ---
