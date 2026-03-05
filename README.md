@@ -1,44 +1,69 @@
-# Assessment Service
+# Unisys Migration Assistant Platform
 
-Assessment Service is responsible for managing and evaluating assessments within the platform.
-
-## Features
-
-- Create assessments
-- Retrieve assessment results
-- Manage assessment metadata
+The Unisys Migration Assistant platform provides automated tools to analyze and modernize legacy applications.  
+It includes AI-assisted code analysis, template-driven reporting, and an Eclipse plugin for developer interaction.
 
 ## Architecture
 
-This service is part of the **Examples Platform** and interacts with:
+The platform consists of the following components:
 
-- User Service
-- Authentication Service
-- PostgreSQL database
+| Component | Description |
+|-----------|-------------|
+| Assessment Service | Core backend service responsible for performing code assessments |
+| GenAI Service | Provides AI-powered analysis and recommendations |
+| Template Config | Handles template configuration for reports |
+| Eclipse Plugin | Developer-facing plugin used inside Eclipse IDE |
 
-## APIs
+## System Architecture
 
-| API | Description |
-|----|----|
-| Assessment API | Manage assessments |
-| User API | Retrieve user information |
-| Authentication API | Handle authentication and authorization |
+Eclipse Plugin → Assessment Service → GenAI Service  
+                                  ↘ Template Config
 
-## Dependencies
+## Modules
 
-- User Service
-- Authentication Service
-- PostgreSQL Database
+### Assessment Service
+Spring Boot application that:
 
-## Tech Stack
+- analyzes project source code
+- generates modernization assessment reports
+- integrates with AI services
 
-- Java
+### GenAI Service
+
+Provides AI-based:
+
+- code insights
+- migration recommendations
+- modernization strategies
+
+### Template Config
+
+Responsible for:
+
+- report templates
+- configuration management
+- template-driven output generation
+
+### Eclipse Plugin
+
+Provides a UI within Eclipse for:
+
+- triggering code assessments
+- visualizing results
+- exporting reports
+
+## Technology Stack
+
+- Java 17
 - Spring Boot
-- REST APIs
+- Maven Multi-module
 - OpenAPI
-- Backstage TechDocs
+- Eclipse Plugin Development
+- Generative AI Integration
 
-## Running Locally
+## Build Instructions
+
+Build the full platform:
 
 ```bash
-mvn spring-boot:run
+mvn clean install

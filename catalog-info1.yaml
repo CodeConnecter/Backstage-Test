@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: assessment-service
-  description: Assessment service responsible for handling assessments
+  description: Core service responsible for performing code assessments and generating modernization reports
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
     backstage.io/techdocs-ref: dir:.
@@ -16,17 +16,15 @@ spec:
     - assessment-service-api
 
   dependsOn:
-    - component:default/user-service
-
-  consumesApis:
-    - api:default/auth-service-api
+    - component:default/genai-service
+    - component:default/template-config
 
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: assessment-service-api
-  description: API exposed by the assessment service
+  description: REST API exposed by the Assessment Service
 
 spec:
   type: openapi
@@ -39,8 +37,8 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: user-service
-  description: User management service
+  name: genai-service
+  description: AI service responsible for analyzing code and generating migration insights
 
 spec:
   type: service
@@ -49,14 +47,29 @@ spec:
 
 ---
 apiVersion: backstage.io/v1alpha1
-kind: API
+kind: Component
 metadata:
-  name: auth-service-api
-  description: Authentication API used by services
+  name: template-config
+  description: Template configuration service used to generate reports and migration outputs
 
 spec:
-  type: openapi
+  type: service
   lifecycle: production
   owner: group:default/guests
-  definition:
-    $text: ./api/auth-openapi.yaml
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eclipse-plugin
+  description: Eclipse IDE plugin used by developers to run modernization assessments
+
+spec:
+  type: application
+  lifecycle: production
+  owner: group:default/guests
+
+  dependsOn:
+    - component:default/assessment-service
+    - component:default/genai-service
+    - component:default/template-config
