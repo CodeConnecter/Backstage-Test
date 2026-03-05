@@ -1,11 +1,11 @@
-# API
+# Assessment API
 
-## GET /users
+The Assessment API allows clients to create and retrieve assessments.
 
-Returns a list of users.
+## Endpoints
 
----
-
-OpenAPI spec: `../api/openapi.yaml`
-
-You can view this API in Backstage via the `API` entity which references the OpenAPI definition at `api/openapi.yaml`.
+| Endpoint | Description |
+|--------|-------------|
+| GET /assessments | List assessments |
+| POST /assessments | Create assessment |
+| GET /assessments/{id} | Get assessment details |

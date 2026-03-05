@@ -1,30 +1,44 @@
-# Backstage Test — User Service
+# Assessment Service
 
-This repository contains a small Java `user-service` used for Backstage demo/testing.
+Assessment Service is responsible for managing and evaluating assessments within the platform.
 
-What’s included
-- `catalog-info.yaml`: Backstage component and API entities.
-- `api/openapi.yaml`: OpenAPI definition for the `user-service-api` API entity.
-- `docs/`: TechDocs content (rendered by Backstage TechDocs plugin). Includes `dependencies.md` and `api.md`.
-- `pom.xml`: Maven project with direct dependencies.
+## Features
 
-Viewing in Backstage
-- Import or register the `catalog-info.yaml` component in your Backstage catalog (point to this repository or upload the file).
-- Open the `user-service` component page to access:
-  - **Docs / TechDocs** (served from `docs/` because `catalog-info.yaml` uses `backstage.io/techdocs-ref: dir:docs`).
-  - **API** view (Backstage reads `api/openapi.yaml` via the `API` entity).
+- Create assessments
+- Retrieve assessment results
+- Manage assessment metadata
 
-Useful commands
-- Generate a Maven dependency tree (full transitive view):
+## Architecture
 
-```powershell
-mvn dependency:tree -DoutputFile=dependency-tree.txt
-```
+This service is part of the **Examples Platform** and interacts with:
 
-- Validate the OpenAPI file locally with a linter (example using `swagger-cli`):
+- User Service
+- Authentication Service
+- PostgreSQL database
 
-```powershell
-swagger-cli validate api\openapi.yaml
-```
+## APIs
 
-If you want, I can add a CI step to auto-generate the dependency report and publish TechDocs on changes.
+| API | Description |
+|----|----|
+| Assessment API | Manage assessments |
+| User API | Retrieve user information |
+| Authentication API | Handle authentication and authorization |
+
+## Dependencies
+
+- User Service
+- Authentication Service
+- PostgreSQL Database
+
+## Tech Stack
+
+- Java
+- Spring Boot
+- REST APIs
+- OpenAPI
+- Backstage TechDocs
+
+## Running Locally
+
+```bash
+mvn spring-boot:run

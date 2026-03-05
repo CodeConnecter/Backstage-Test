@@ -3,7 +3,7 @@ site_name: Assessment Service
 nav:
   - Home: index.md
   - API: api.md
-
+  - Dependencies: dependencies.md
 docs_dir: docs
 
 plugins:

@@ -1,9 +1,22 @@
-# User Service
 
-This service manages users.
+## docs/index.md
 
-## API
+```markdown
+# Assessment Service
 
-GET /users
+The Assessment Service manages assessment workflows and results.
 
-Returns a list of users.
+## Responsibilities
+
+- Manage assessment data
+- Provide assessment APIs
+- Integrate with authentication and user services
+
+## Service Dependencies
+
+- User Service
+- Authentication Service
+
+## API Documentation
+
+See the API documentation for detailed endpoint descriptions.

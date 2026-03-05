@@ -1,9 +1,13 @@
-# Dependencies
+# Service Dependencies
 
-This page lists direct dependencies declared in the project's `pom.xml`.
+## User Service
 
-- **com.sparkjava:spark-core**: 2.9.4
+Provides user profile and account information.
 
-If you add or update dependencies in `pom.xml`, regenerate or update this document.
+## Authentication Service
 
-Optional: consider integrating a Maven dependency report plugin to auto-generate a full dependency tree.
+Handles authentication and token validation.
+
+## Database
+
+PostgreSQL database used to store assessment data.
