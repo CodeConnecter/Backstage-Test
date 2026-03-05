@@ -6,13 +6,19 @@ metadata:
   annotations:
     github.com/project-slug: my-org/assessment-service
     backstage.io/techdocs-ref: dir:.
-
+relations:
+  - type: ownedBy
+    targetRef: group:default/assessment-service-api
+  - type: partOf
+    targetRef: system:default/examples
+  - type: providesApi
+    targetRef: api:default/assessment-service-api
 spec:
   type: service
   lifecycle: production
   owner: Team-Transformation
   providesApis:
-    - user-service-api
+    - assessment-service-api
 
 ---
 apiVersion: backstage.io/v1alpha1
