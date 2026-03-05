@@ -10,8 +10,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: group:default/team-transformation
-  system: examples
+  owner: group:default/guests
 
   providesApis:
     - assessment-service-api
@@ -32,8 +31,7 @@ metadata:
 spec:
   type: openapi
   lifecycle: production
-  owner: group:default/team-transformation
-  system: examples
+  owner: group:default/guests
   definition:
     $text: ./api/openapi.yaml
 
@@ -47,18 +45,18 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: group:default/team-transformation
-  system: examples
+  owner: group:default/guests
 
 ---
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: API
 metadata:
   name: auth-service-api
-  description: Authentication service API
+  description: Authentication API used by services
 
 spec:
-  type: service
+  type: openapi
   lifecycle: production
-  owner: group:default/team-transformation
-  system: examples
+  owner: group:default/guests
+  definition:
+    $text: ./api/auth-openapi.yaml
