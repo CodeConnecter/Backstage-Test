@@ -1,0 +1,12 @@
+site_name: Assessment Service
+
+nav:
+  - Home: index.md
+  - Assessment Service: assessment-service.md
+  - GenAI Service: genai-service.md
+  - Template Config: template-config.md
+  - Plugin: eclipse-plugin.md
+docs_dir: docs
+
+plugins:
+  - techdocs-core
