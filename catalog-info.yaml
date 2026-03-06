@@ -1,11 +1,82 @@
 apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: unisys
+  title: Unisys Migration Assistant Platform
+  description: >-
+    Enterprise platform for analyzing, assessing, and modernizing legacy Java applications.
+    Combines static code analysis, AI-powered intelligence, and automated code transformation
+    to deliver actionable migration strategies. Supports Maven, Gradle, and Ant builds with
+    three-tier complexity classification (L1/L2/L3) and framework migration across EJB,
+    JAX-RS, JSF to Spring Boot, Java 8→17→21 upgrades, and more.
+  tags:
+    - java
+    - modernization
+    - migration
+    - ai
+    - code-analysis
+    - eclipse
+  links:
+    - url: https://github.com/CodeConnecter/Backstage-Test
+      title: GitHub Repository
+      icon: github
+    - url: ./docs/ARCHITECTURE.md
+      title: Architecture Documentation
+      icon: documentation
+
+spec:
+  owner: group:default/team-transformation
+  domain: group:default/platform-engineering
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-transformation
+  title: Transformation Team
+  description: >-
+    Team responsible for platform development, AI integrations, and modernization tooling
+
+spec:
+  type: team
+  profile:
+    displayName: Transformation Team
+    email: team-transformation@unisys.com
+  parent: group:default/engineering
+  children: []
+  members:
+    - user:default/architect-lead
+    - user:default/backend-lead
+
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: assessment-service
-  description: Assessment service responsible for performing code assessments and generating modernization reports
+  title: Assessment Service
+  description: >-
+    Core backend service for analyzing Java codebases and generating modernization assessment reports.
+    Detects project structure, dependencies, and framework usage. Classifies complexity (L1/L2/L3),
+    integrates with GenAI Service for AI-powered recommendations, and generates HTML/PDF reports
+    via FreeMarker templates. Supports Maven, Gradle, and Ant build systems.
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
-    backstage.io/techdocs-ref: dir:.
+    backstage.io/techdocs-ref: dir:./docs/assessment-service.md
+    sonarqube.org/project-key: unisys:assessment-service
+    kubernetes.io/service-name: assessment-service
+  tags:
+    - java
+    - spring-boot
+    - code-analysis
+    - microservice
+    - rest-api
+  links:
+    - url: ./docs/assessment-service.md
+      title: Service Documentation
+      icon: documentation
+    - url: ./api/openapi.yaml
+      title: OpenAPI Specification
+      icon: docs
 
 spec:
   type: service
@@ -19,13 +90,30 @@ spec:
   dependsOn:
     - component:default/genai-service
     - component:default/template-config
+    - resource:default/openai-api
+    - resource:default/azure-openai-api
+    - resource:default/auth0-oauth
 
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: assessment-service-api
-  description: REST API exposed by the Assessment Service
+  title: Assessment Service REST API
+  description: >-
+    Primary REST API for the Assessment Service.
+    Provides endpoints for project analysis, report generation, and health checks.
+    Requires JWT authentication. Accepts ZIP archives of Java projects and returns
+    modernization assessment reports in HTML or PDF format.
+  tags:
+    - java
+    - rest
+    - analysis
+    - reports
+  links:
+    - url: ./api/openapi.yaml
+      title: OpenAPI 3.0 Specification
+      icon: docs
 
 spec:
   type: openapi
@@ -34,13 +122,86 @@ spec:
   system: unisys
   definition:
     $text: ./api/openapi.yaml
+  consumedBy:
+    - component:default/eclipse-plugin
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: user-api
+  title: User Management API
+  description: >-
+    REST API for user authentication and authorization.
+    Integrates with Auth0 for OAuth2/JWT token management.
+    Manages user profiles, permissions, and role-based access control.
+
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/team-transformation
+  system: unisys
+  definition:
+    $text: ./api/user-openapi.yaml
+  consumedBy:
+    - component:default/assessment-service
+    - component:default/genai-service
 
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: genai-service
-  description: AI service responsible for analyzing code and generating migration insights
+  title: GenAI Service
+  description: >-
+    AI integration layer providing unified abstraction over OpenAI and Azure OpenAI APIs
+    for intelligent code analysis and migration recommendations. Manages assistant lifecycle,
+    handles threaded conversations with file-aware context, processes code metadata,
+    and supports provider switching. Implements Assistants API v2 and Azure OpenAI
+    API v2024-05-01-preview with GPT-4o model.
+  annotations:
+    github.com/project-slug: CodeConnecter/Backstage-Test
+    backstage.io/techdocs-ref: dir:./docs/genai-service.md
+    sonarqube.org/project-key: unisys:genai-service
+  tags:
+    - java
+    - ai
+    - openai
+    - azure-openai
+    - gpt-4o
+    - microservice
+  links:
+    - url: ./docs/genai-service.md
+      title: Service Documentation
+      icon: documentation
+    - url: ./api/genai-service-api.yaml
+      title: API Specification
+      icon: docs
+
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/team-transformation
+  system: unisys
+
+  providesApis:
+    - genai-service-internal-api
+
+  dependsOn:
+    - resource:default/openai-api
+    - resource:default/azure-openai-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: genai-service-internal-api
+  title: GenAI Service Internal API
+  description: >-
+    Internal library API (JAR) for GenAI Service functionality.
+    Provides configuration layer, service layer for assistant lifecycle,
+    client layer for REST calls, and file management operations.
+    Supports both OpenAI and Azure OpenAI providers with GPT-4o model.
 
 spec:
   type: openapi
@@ -49,13 +210,37 @@ spec:
   system: unisys
   definition:
     $text: ./api/genai-service-api.yaml
+  providedBy:
+    - component:default/genai-service
+  consumedBy:
+    - component:default/assessment-service
 
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: template-config
-  description: Template configuration service used to generate reports and migration outputs
+  title: Template Config Service
+  description: >-
+    Template configuration and code transformation service for automated framework migration
+    and modernization. Loads YAML transformation configurations, parses source files into AST
+    using JavaParser, transforms annotations/imports/types, updates build files (pom.xml)
+    with new dependencies. Supports JAX-RS→Spring Boot, EJB modernization, and Java
+    version upgrade migrations with OpenRewrite recipes.
+  annotations:
+    github.com/project-slug: CodeConnecter/Backstage-Test
+    backstage.io/techdocs-ref: dir:./docs/template-config.md
+    sonarqube.org/project-key: unisys:template-config
+  tags:
+    - java
+    - code-transformation
+    - openrewrite
+    - migration
+    - framework
+  links:
+    - url: ./docs/template-config.md
+      title: Service Documentation
+      icon: documentation
 
 spec:
   type: service
@@ -68,7 +253,32 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: eclipse-plugin
-  description: Eclipse IDE plugin used by developers to run modernization assessments
+  title: Eclipse IDE Plugin
+  description: >-
+    Client-side Eclipse IDE plugin providing interactive in-IDE assessment and migration
+    capabilities. Integrates with Assessment Service for code analysis and report generation.
+    Supports 28+ migration actions for automating framework transitions and Java upgrades.
+    Built on Eclipse RCP, SWT, and OSGi technologies. Enables developers to run modernization
+    assessments and transformations directly from the IDE without context switching.
+  annotations:
+    github.com/project-slug: CodeConnecter/Backstage-Test
+    backstage.io/techdocs-ref: dir:./docs/eclipse-plugin.md
+    sonarqube.org/project-key: unisys:eclipse-plugin
+  tags:
+    - eclipse
+    - ide
+    - plugin
+    - ui
+    - swtx
+    - rcp
+    - client
+  links:
+    - url: ./docs/eclipse-plugin.md
+      title: Plugin Documentation
+      icon: documentation
+    - url: https://www.eclipse.org/
+      title: Eclipse IDE
+      icon: web
 
 spec:
   type: application
@@ -76,7 +286,129 @@ spec:
   owner: group:default/team-transformation
   system: unisys
 
+  providesApis: []
+
   dependsOn:
     - component:default/assessment-service
     - component:default/genai-service
     - component:default/template-config
+    - resource:default/auth0-oauth
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: openai-api
+  title: OpenAI API
+  description: >-
+    External OpenAI service integration. Provides GPT-4o model and Assistants API v2
+    for AI-powered code analysis and migration recommendations.
+  tags:
+    - external
+    - ai
+    - openai
+    - gpt-4o
+  links:
+    - url: https://openai.com/api/
+      title: OpenAI Platform
+      icon: web
+
+spec:
+  type: external-service
+  owner: group:default/team-transformation
+  system: unisys
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: azure-openai-api
+  title: Azure OpenAI API
+  description: >-
+    External Azure OpenAI service integration. Provides GPT-4o model and
+    API v2024-05-01-preview for enterprise AI deployments with Azure integration.
+  tags:
+    - external
+    - ai
+    - azure
+    - openai
+    - gpt-4o
+  links:
+    - url: https://azure.microsoft.com/en-us/products/ai-services/openai-service/
+      title: Azure OpenAI Service
+      icon: web
+
+spec:
+  type: external-service
+  owner: group:default/team-transformation
+  system: unisys
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: auth0-oauth
+  title: Auth0 OAuth2/JWT
+  description: >-
+    External authentication service providing OAuth2 and JWT token management
+    for secure API access and user authorization across the platform.
+  tags:
+    - external
+    - security
+    - oauth2
+    - jwt
+    - auth0
+  links:
+    - url: https://auth0.com/
+      title: Auth0 Platform
+      icon: web
+
+spec:
+  type: external-service
+  owner: group:default/team-transformation
+  system: unisys
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: kubernetes-deployment
+  title: Kubernetes Infrastructure
+  description: >-
+    Kubernetes deployment infrastructure on Azure hosting the backend services.
+    Four environments provisioned: development, staging, pre-production, and production.
+    Includes Docker containerization, load balancing, and auto-scaling.
+  tags:
+    - infrastructure
+    - kubernetes
+    - azure
+    - docker
+    - devops
+  links:
+    - url: https://kubernetes.io/
+      title: Kubernetes Documentation
+      icon: web
+
+spec:
+  type: infrastructure
+  owner: group:default/team-transformation
+  system: unisys
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: azure-devops-ci-cd
+  title: Azure DevOps CI/CD
+  description: >-
+    Azure DevOps pipelines for continuous integration and deployment.
+    Manages build, test, and deployment workflows for all platform components.
+
+spec:
+  type: infrastructure
+  owner: group:default/team-transformation
+  system: unisys
+  links:
+    - url: https://azure.microsoft.com/en-us/products/devops/
+      title: Azure DevOps
+      icon: web
