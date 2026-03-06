@@ -34,6 +34,7 @@ spec:
   system: unisys
   definition:
     $text: ./api/openapi.yaml
+    genai-service-api
 
 ---
 apiVersion: backstage.io/v1alpha1
@@ -43,10 +44,12 @@ metadata:
   description: AI service responsible for analyzing code and generating migration insights
 
 spec:
-  type: service
+  type: openapi
   lifecycle: production
   owner: group:default/team-transformation
   system: unisys
+  definition:
+    $text: ./api/genai-service-api.yaml
 
 ---
 apiVersion: backstage.io/v1alpha1
