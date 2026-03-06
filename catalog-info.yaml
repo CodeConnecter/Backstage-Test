@@ -20,7 +20,7 @@ metadata:
     - url: https://github.com/CodeConnecter/Backstage-Test
       title: GitHub Repository
       icon: github
-    - url: ./docs/ARCHITECTURE.md
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/ARCHITECTURE.md
       title: Architecture Documentation
       icon: documentation
 
@@ -71,10 +71,10 @@ metadata:
     - microservice
     - rest-api
   links:
-    - url: ./docs/assessment-service.md
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/assessment-service.md
       title: Service Documentation
       icon: documentation
-    - url: ./api/openapi.yaml
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/api/openapi.yaml
       title: OpenAPI Specification
       icon: docs
 
@@ -111,7 +111,7 @@ metadata:
     - analysis
     - reports
   links:
-    - url: ./api/openapi.yaml
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/api/openapi.yaml
       title: OpenAPI 3.0 Specification
       icon: docs
 
@@ -171,10 +171,10 @@ metadata:
     - gpt-4o
     - microservice
   links:
-    - url: ./docs/genai-service.md
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/genai-service.md
       title: Service Documentation
       icon: documentation
-    - url: ./api/genai-service-api.yaml
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/api/genai-service-api.yaml
       title: API Specification
       icon: docs
 
@@ -238,7 +238,7 @@ metadata:
     - migration
     - framework
   links:
-    - url: ./docs/template-config.md
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/template-config.md
       title: Service Documentation
       icon: documentation
 
@@ -273,7 +273,7 @@ metadata:
     - rcp
     - client
   links:
-    - url: ./docs/eclipse-plugin.md
+    - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/eclipse-plugin.md
       title: Plugin Documentation
       icon: documentation
     - url: https://www.eclipse.org/
