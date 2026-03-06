@@ -61,7 +61,7 @@ metadata:
     via FreeMarker templates. Supports Maven, Gradle, and Ant build systems.
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
-    backstage.io/techdocs-ref: dir:./docs/assessment-service.md
+    backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:assessment-service
     kubernetes.io/service-name: assessment-service
   tags:
@@ -161,7 +161,7 @@ metadata:
     API v2024-05-01-preview with GPT-4o model.
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
-    backstage.io/techdocs-ref: dir:./docs/genai-service.md
+    backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:genai-service
   tags:
     - java
@@ -229,7 +229,7 @@ metadata:
     version upgrade migrations with OpenRewrite recipes.
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
-    backstage.io/techdocs-ref: dir:./docs/template-config.md
+    backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:template-config
   tags:
     - java
@@ -262,7 +262,7 @@ metadata:
     assessments and transformations directly from the IDE without context switching.
   annotations:
     github.com/project-slug: CodeConnecter/Backstage-Test
-    backstage.io/techdocs-ref: dir:./docs/eclipse-plugin.md
+    backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:eclipse-plugin
   tags:
     - eclipse
