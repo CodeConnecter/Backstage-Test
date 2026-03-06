@@ -34,7 +34,6 @@ spec:
   system: unisys
   definition:
     $text: ./api/openapi.yaml
-    genai-service-api
 
 ---
 apiVersion: backstage.io/v1alpha1
