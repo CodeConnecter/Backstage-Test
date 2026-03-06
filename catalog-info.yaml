@@ -13,9 +13,7 @@ metadata:
     - java
     - modernization
     - migration
-    - ai
-    - code-analysis
-    - eclipse
+
   links:
     - url: https://github.com/CodeConnecter/Backstage-Test
       title: GitHub Repository
@@ -65,11 +63,9 @@ metadata:
     sonarqube.org/project-key: unisys:assessment-service
     kubernetes.io/service-name: assessment-service
   tags:
-    - java
     - spring-boot
     - code-analysis
-    - microservice
-    - rest-api
+
   links:
     - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/assessment-service.md
       title: Service Documentation
@@ -108,8 +104,6 @@ metadata:
   tags:
     - java
     - rest
-    - analysis
-    - reports
   links:
     - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/api/openapi.yaml
       title: OpenAPI 3.0 Specification
@@ -164,11 +158,7 @@ metadata:
     backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:genai-service
   tags:
-    - java
     - ai
-    - openai
-    - azure-openai
-    - gpt-4o
     - microservice
   links:
     - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/genai-service.md
@@ -232,10 +222,8 @@ metadata:
     backstage.io/techdocs-ref: dir:.
     sonarqube.org/project-key: unisys:template-config
   tags:
-    - java
     - code-transformation
     - openrewrite
-    - migration
     - framework
   links:
     - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/template-config.md
@@ -267,11 +255,6 @@ metadata:
   tags:
     - eclipse
     - ide
-    - plugin
-    - ui
-    - swtx
-    - rcp
-    - client
   links:
     - url: https://raw.githubusercontent.com/CodeConnecter/Backstage-Test/main/docs/eclipse-plugin.md
       title: Plugin Documentation
@@ -305,9 +288,7 @@ metadata:
     for AI-powered code analysis and migration recommendations.
   tags:
     - external
-    - ai
-    - openai
-    - gpt-4o
+
   links:
     - url: https://openai.com/api/
       title: OpenAI Platform
@@ -329,10 +310,7 @@ metadata:
     API v2024-05-01-preview for enterprise AI deployments with Azure integration.
   tags:
     - external
-    - ai
-    - azure
     - openai
-    - gpt-4o
   links:
     - url: https://azure.microsoft.com/en-us/products/ai-services/openai-service/
       title: Azure OpenAI Service
@@ -355,9 +333,6 @@ metadata:
   tags:
     - external
     - security
-    - oauth2
-    - jwt
-    - auth0
   links:
     - url: https://auth0.com/
       title: Auth0 Platform
@@ -380,9 +355,6 @@ metadata:
     Includes Docker containerization, load balancing, and auto-scaling.
   tags:
     - infrastructure
-    - kubernetes
-    - azure
-    - docker
     - devops
   links:
     - url: https://kubernetes.io/
