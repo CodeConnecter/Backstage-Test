@@ -1,0 +1,36 @@
+site_name: Unisys Migration Assistant Platform
+site_description: Enterprise platform for analyzing, assessing, and modernizing legacy Java applications
+
+nav:
+  - Home: index.md
+  - Architecture: ARCHITECTURE.md
+  - Components:
+    - Assessment Service: assessment-service.md
+    - GenAI Service: genai-service.md
+    - Template Config: template-config.md
+    - Eclipse Plugin: eclipse-plugin.md
+  - Design:
+    - High Level Design: HLD.md
+    - Low Level Design: LLD.md
+  - README: README.md
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
