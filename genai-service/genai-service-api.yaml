@@ -1,0 +1,691 @@
+openapi: 3.0.3
+info:
+  title: GenAI Service API
+  description: |
+    AI integration layer for the Unisys Migration Assistant Platform.
+
+    Supports OpenAI and Azure OpenAI Assistants API for intelligent code analysis,
+    assistant lifecycle management, file-aware context analysis, and threaded conversations.
+
+    **Authentication:** All endpoints require a valid JWT Bearer token (Auth0).
+
+    **Providers:** OpenAI (Assistants API v2) and Azure OpenAI (2024-05-01-preview).
+  version: 2.0.0
+  contact:
+    name: Unisys Migration Assistant Team
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development
+  - url: https://codeassessment-int.rcp.unisys.com
+    description: Integration
+  - url: https://codeassessment-qa.rcp.unisys.com
+    description: QA
+  - url: https://codeassessment-prod.rcp.unisys.com
+    description: Production
+
+tags:
+  - name: Health
+    description: Service health checks
+  - name: Assessment
+    description: Code assessment and report generation
+  - name: Assistant
+    description: AI assistant lifecycle management
+  - name: Threads
+    description: Conversation thread management
+  - name: Messages
+    description: Message operations within threads
+  - name: Runs
+    description: Assistant run execution and monitoring
+  - name: Files
+    description: File upload and management
+
+paths:
+  /:
+    get:
+      tags: [Health]
+      summary: Health Check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /generate-report:
+    post:
+      tags: [Assessment]
+      summary: Generate Assessment Report
+      description: Accepts a ZIP archive of a Java project and returns a modernization report.
+      operationId: generateReport
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [projectZip, provider]
+              properties:
+                projectZip:
+                  type: string
+                  format: binary
+                  description: ZIP archive of the Java project
+                provider:
+                  type: string
+                  enum: [OPEN_AI, AZURE_OPEN_AI]
+                  description: AI provider for analysis
+                reportFormat:
+                  type: string
+                  enum: [HTML, PDF]
+                  default: HTML
+      responses:
+        "200":
+          description: Report generated
+          content:
+            text/html:
+              schema:
+                type: string
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/v1/assistants:
+    post:
+      tags: [Assistant]
+      summary: Create AI Assistant
+      operationId: createAssistant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAssistantRequest"
+      responses:
+        "201":
+          description: Assistant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/v1/assistants/{assistantId}:
+    get:
+      tags: [Assistant]
+      summary: Retrieve AI Assistant
+      operationId: getAssistant
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/AssistantId"
+      responses:
+        "200":
+          description: Assistant retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/threads:
+    post:
+      tags: [Threads]
+      summary: Create Conversation Thread
+      operationId: createThread
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Thread created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThreadResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/threads/{threadId}/messages:
+    post:
+      tags: [Messages]
+      summary: Add Message to Thread
+      operationId: addMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageRequest"
+      responses:
+        "201":
+          description: Message added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    get:
+      tags: [Messages]
+      summary: List Thread Messages
+      operationId: listMessages
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Messages retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/threads/{threadId}/runs:
+    post:
+      tags: [Runs]
+      summary: Create Assistant Run
+      description: Initiates an asynchronous assistant run. Poll the status endpoint to track completion.
+      operationId: createRun
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRunRequest"
+      responses:
+        "201":
+          description: Run created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/v1/threads/{threadId}/runs/{runId}:
+    get:
+      tags: [Runs]
+      summary: Get Run Status
+      description: Returns current run status (queued, in_progress, completed, failed, cancelled, expired).
+      operationId: getRunStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ThreadId"
+        - $ref: "#/components/parameters/RunId"
+      responses:
+        "200":
+          description: Run status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/files:
+    post:
+      tags: [Files]
+      summary: Upload File
+      description: Upload a file for AI assistant context (max 512 MB).
+      operationId: uploadFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, purpose]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                purpose:
+                  type: string
+                  enum: [assistants]
+      responses:
+        "200":
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "413":
+          description: File too large
+    get:
+      tags: [Files]
+      summary: List Files
+      operationId: listFiles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Files listed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/files/{fileId}:
+    delete:
+      tags: [Files]
+      summary: Delete File
+      operationId: deleteFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/FileId"
+      responses:
+        "200":
+          description: File deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /processFiles:
+    get:
+      tags: [Assessment]
+      summary: Process Files with Template Config
+      operationId: processFiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectPath
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Path to the project directory
+        - name: ymlFileName
+          in: query
+          required: true
+          schema:
+            type: string
+          description: YAML transformation configuration file
+      responses:
+        "200":
+          description: Files processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessingResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Auth0 identity provider
+
+  parameters:
+    AssistantId:
+      name: assistantId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: AI assistant identifier
+    ThreadId:
+      name: threadId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Conversation thread identifier
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Assistant run identifier
+    FileId:
+      name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Uploaded file identifier
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+        service:
+          type: string
+        version:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    CreateAssistantRequest:
+      type: object
+      required: [name, model, instructions]
+      properties:
+        name:
+          type: string
+        model:
+          type: string
+        instructions:
+          type: string
+        temperature:
+          type: number
+          minimum: 0.0
+          maximum: 2.0
+          default: 0.3
+        tools:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [code_interpreter, file_search]
+
+    AssistantResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        name:
+          type: string
+        model:
+          type: string
+        instructions:
+          type: string
+        temperature:
+          type: number
+        created_at:
+          type: integer
+          format: int64
+
+    ThreadResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+
+    CreateMessageRequest:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user]
+        content:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: object
+            properties:
+              file_id:
+                type: string
+              tools:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [file_search, code_interpreter]
+
+    MessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        thread_id:
+          type: string
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              text:
+                type: object
+                properties:
+                  value:
+                    type: string
+        created_at:
+          type: integer
+          format: int64
+
+    MessageListResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          default: list
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageResponse"
+        has_more:
+          type: boolean
+
+    CreateRunRequest:
+      type: object
+      required: [assistant_id]
+      properties:
+        assistant_id:
+          type: string
+        model:
+          type: string
+        temperature:
+          type: number
+        instructions:
+          type: string
+
+    RunResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        thread_id:
+          type: string
+        assistant_id:
+          type: string
+        status:
+          type: string
+          enum: [queued, in_progress, completed, failed, cancelled, expired]
+        model:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+        completed_at:
+          type: integer
+          format: int64
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+
+    FileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        bytes:
+          type: integer
+        filename:
+          type: string
+        purpose:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+
+    FileListResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          default: list
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileResponse"
+
+    DeleteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        deleted:
+          type: boolean
+
+    ProcessingResult:
+      type: object
+      properties:
+        status:
+          type: string
+        filesProcessed:
+          type: integer
+        totalFiles:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Missing or invalid JWT token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"

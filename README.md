@@ -1,37 +1,92 @@
 # Unisys Migration Assistant Platform
 
-The Unisys Migration Assistant Platform is a multi-module modernization tool designed to analyze legacy codebases and assist in migration and modernization processes.
+Enterprise platform for analyzing, assessing, and modernizing legacy Java applications. Combines static code analysis, AI-powered intelligence, and automated code transformation to deliver actionable migration strategies.
 
-The platform provides automated code assessment, AI-powered analysis, and developer tooling through an Eclipse plugin.
 
-## Architecture Overview
+## Architecture
+```
+Eclipse Plugin (IDE Client)
+        │
+        ▼
+Assessment Service ──▶ GenAI Service ──▶ OpenAI / Azure OpenAI
+        │
+        ▼
+Template Config Service
 
-The platform consists of the following modules:
+```
 
-| Module | Description |
-|------|-------------|
-| assessment-service | Core service responsible for analyzing source code |
-| genai-service | AI-based analysis engine |
-| template-config | Configuration and templates for report generation |
-| eclipse-plugin | Eclipse IDE plugin used to run assessments |
+## Modules
 
-## System Architecture
+| Module               | Description                                              |
+|----------------------|----------------------------------------------------------|
+| assessment-service   | Code analysis, complexity scoring, and report generation |
+| genai-service        | AI integration layer for OpenAI and Azure OpenAI         |
+| template-config      | Automated code transformation and migration engine       |
+| eclipse-plugin       | Eclipse IDE plugin for in-IDE assessment and migration   |
 
-Eclipse Plugin  
-      ↓  
-Assessment Service  
-      ↓  
-GenAI Service  
-      ↓  
-Template Config
+
+## Key Capabilities
+
+- Automated analysis of Maven, Gradle, and Ant projects
+- Three-tier complexity classification (L1 / L2 / L3)
+- AI-powered Assessment reasons & migration recommendations 
+- Framework migration (JAX-RS, EJB, JSF → Spring Boot)
+- Java version upgrades (8 → 17 → 21)
+- HTML report generation
+- Interactive Eclipse plugin with 28+ migration actions
+
 
 ## Technology Stack
 
-- Java 17
-- Spring Boot
-- Maven Multi-Module
-- OpenAPI
-- Eclipse Plugin Development
-- AI-powered code analysis
+| Layer          | Technologies                                    |
+|----------------|-------------------------------------------------|
+| Language       | Java 17                                         |
+| Framework      | Spring Boot 3.5.7                               |
+| Build          | Maven Multi-Module                              |
+| AI             | OpenAI GPT-4o, Azure OpenAI (Assistants API v2) |
+| Analysis       | JavaParser, Checkstyle, OpenRewrite             |
+| Reporting      | FreeMarker, Playwright (PDF)                    |
+| IDE            | Eclipse RCP, SWT, OSGi                          |
+| Security       | OAuth2 / JWT (Auth0)                            |
+| Infrastructure | Docker, Kubernetes, Azure DevOps                |
 
-## Project Structure
+
+## Getting Started
+
+```bash
+# Build all modules
+cd unisys-migration-plugin
+mvn clean install
+
+# Run Assessment Service
+cd assessment-service
+mvn spring-boot:run
+```
+
+## Deployment
+
+| Environment | URL                                |
+|-------------|------------------------------------|      
+| Integration | codeassessment-int.rcp.unisys.com  |
+| QA          | codeassessment-qa.rcp.unisys.com   |
+| Production  | codeassessment-prod.rcp.unisys.com |
+
+
+## API Reference
+
+| Method | Endpoint           | Description                              |
+|--------|--------------------|------------------------------------------|
+| GET    | `/`                | Health check                             |
+| POST   | `/generate-report` | Generate assessment report               |
+| GET    | `/processFiles`    | Process files with transformation config |
+
+
+## Security
+
+- OAuth2 Resource Server with JWT Bearer tokens
+- Auth0 identity provider
+- TLS enforced across all environments
+- Non-root container execution
+- SonarQube and Trivy scanning in CI/CD pipeline
+
+---
